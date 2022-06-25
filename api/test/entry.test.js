@@ -55,22 +55,17 @@ const PreviousData = async () => {
         balance: '-00:15'
     })
 
-    await Promise.all([user.save(), entry1.save(), entry2.save(), entry3.save()])
-    .then( result => {
-        state.user = user.toJSON()
-    })
-    .catch( error => {
-        console.error("entry.test.js - PreviousData ==> ", error)
-        state.user = null
-    })
-}
-
-const CreateEntryRoute = async (entry) => {
-    const res = await request(app)
-        .post('/entry/register')
-        .send(entry)
-
-    return res
+    await user.save()
+        .then( result => entry1.save())
+        .then( result => entry2.save())
+        .then( result => entry3.save())
+        .then( result => {
+            state.user = user.toJSON()
+        })
+        .catch( error => { 
+            state.user = null
+            throw error 
+        })
 }
 
 describe('Entries Tests', () => {
@@ -78,12 +73,12 @@ describe('Entries Tests', () => {
         await PreviousData()
     })
     
-    afterAll( async() => {
+    afterAll( async () => {
         await DeleteEntries(state.user._id)
         await DeleteUser(state.user._id)
     })
     
-    it('Create sample Entry Point', async () => {
+    it('Create sample Entry Point', () => {
         var date = new Date('03-16-2022')
 
         const newEntry = {
@@ -92,18 +87,16 @@ describe('Entries Tests', () => {
             in1: '08:00'
         }
 
-        const res = await CreateEntryRoute(newEntry)
-
-        if (res.statusCode != 201) {
-            let test = await User.findOne({ _id: state.user._id }).exec()
-            console.warn('Create sample Entry Point: ', test)
-            console.error('entry.test.js -> Create sample Entry Point => ', res.body)
-        }
-
-        expect(res.statusCode).toBe(201)
+        return request(app)
+            .post("/entry/register")
+            .send(newEntry)
+            .then( res => {
+                expect(res.statusCode).toBe(201)
+            })
+            .catch( error => { throw error } )
     })
 
-    it('Create Invalid Entry Point', async () => {
+    it('Create Invalid Entry Point', () => {
         var date = new Date('03-16-2022')
 
         const newEntry = {
@@ -112,16 +105,16 @@ describe('Entries Tests', () => {
             in1: '08:00'
         }
 
-        const res = await CreateEntryRoute(newEntry)
-
-        if (res.statusCode != 400) {
-            console.error('entry.test.js -> Create Invalid Entry Point=> ', res.body)
-        }
-
-        expect(res.statusCode).toBe(400)
+        return request(app)
+            .post("/entry/register")
+            .send(newEntry)
+            .then( res => {
+                expect(res.statusCode).toBe(400)
+            })
+            .catch( error => { throw error } )
     })
 
-    it('Update Entry Point', async() => {
+    it('Update Entry Point', () => {
         var date = new Date('03-16-2022')
 
         const newEntry = {
@@ -130,48 +123,39 @@ describe('Entries Tests', () => {
             in1: '08:00'
         }
 
-        const resEntry = await CreateEntryRoute(newEntry)
+        return request(app)
+            .post("/entry/register")
+            .send(newEntry)
+            .then( entry => {
+                let updatedEntry = { ...entry.body }
+                updatedEntry.out1 = "12:00"
 
-        if (resEntry.statusCode != 201) {
-            console.error('entry.test.js -> Update Entry Point => ', resEntry.body)
-        }
-
-        expect(resEntry.statusCode).toBe(201)
-
-        // Updating entry
-        const updatedEntry = Object.assign({}, resEntry.body)
-        updatedEntry.out1 = '12:00'
-
-        const res = await request(app)
-            .put('/entry/update')
-            .send(updatedEntry)
-
-            if (res.statusCode != 200 || res.body.out1 != "12:00") {
-                console.error('entry.test.js -> Update Entry Point => ', res.body)
-            }
-
-        expect(res.statusCode).toBe(200)
-        expect(res.body.out1).toBe('12:00')
+                return request(app)
+                    .put("/entry/update")
+                    .send(updatedEntry)
+            })
+            .then( resUpdate => {
+                expect(resUpdate.statusCode).toBe(200)
+                expect(resUpdate.body.out1).toBe("12:00")
+            })
+            .catch( error => { throw error } )
+        
     })
 
-    it('Get Entries by user', async() => {
+    it('Get Entries by user', () => {
         // Get entries
         const filter = {
             user_id: state.user._id
         }
 
-        // Waiting to save all data
-        const entries = await request(app)
-            .get('/entry')
+        return request(app)
+            .get("/entry")
             .send(filter)
-
-        
-        if (entries.body.totalBalance != '00:15') {
-            console.error('entry.test.js -> Get Entries by user => ', entries.body)
-        }
-
-        expect(entries.body.totalBalance).toBe('00:15')
-        expect(entries.body.entries.length).toBe(5)
-        expect(entries.statusCode).toBe(200)
+            .expect(200)
+            .then( res => {
+                expect(res.body.totalBalance).toBe('00:15')
+                expect(res.body.entries.length).toBe(5)
+            })
+            .catch( error => { throw error })
     })
 })

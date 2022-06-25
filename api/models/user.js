@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, "SENHA - Precisamos de uma senha para continuar"],
-        select: false
+        select: true
     },
     journey: {
         type: String,

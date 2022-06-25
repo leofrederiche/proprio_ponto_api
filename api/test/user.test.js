@@ -9,22 +9,6 @@ const state = {
     user: null
 }
 
-const CreateUserRoute = async (user) => {
-    const res = await request(app)
-        .post('/user/register')
-        .send(user)
-
-    return res
-}
-
-const UpdateUserRoute = async (user) => {
-    const res = await request(app)
-        .put('/user/update')
-        .send(user)
-
-    return res
-}
-
 const PreviousData = async () =>{
     const newUser = new User({
         name: faker.name.firstName(),
@@ -33,14 +17,11 @@ const PreviousData = async () =>{
         journey: "08:00"
     })
 
-    await newUser.save()
-    .then( createdUser => {
-        state.user = createdUser.toJSON()
-    })
-    .catch( error => {
-        console.error("user.test.js - CreateFixedUser --> ", error)
-        state.user = { msg: "Erro ao criar usuario", error }
-    })
+    return newUser.save()
+        .then( res => {
+            state.user = res.toJSON()
+        })
+        .catch( error => { throw error })
 }
 
 describe('User Tests', () => {
@@ -52,7 +33,7 @@ describe('User Tests', () => {
         await DeleteUser(state.user._id)
     })
 
-    it('Create User', async () => {
+    it('Create User', () => {
         const newUser = {
             name: faker.name.firstName(),
             email: faker.internet.email(),
@@ -60,39 +41,80 @@ describe('User Tests', () => {
             journey: "08:00"
         }
 
-        const res = await CreateUserRoute(newUser)
-
-        expect(res.statusCode).toBe(201)
-
-        await DeleteUser(res.body._id)
+        return request(app)
+            .post('/user/register')
+            .send(newUser)
+            .then( res => {
+                expect(res.statusCode).toBe(201) 
+                DeleteUser(res.body._id)
+            })
+            .catch( error => { throw error })
     })
 
-    it('Create invalid User', async () => {
+    it('Create invalid User', () => {
         const newUser = {
             name: faker.name.firstName(),
             email: faker.internet.email()
         }
 
-        const res = await CreateUserRoute(newUser)
-        if (res.statusCode != 400) {
-            console.error('user.test.js - Create invalid User ===> ', resUpdate.body)
-        }
-
-        expect(res.statusCode).toBe(400)
+        return request(app)
+            .post('/user/register')
+            .send(newUser)
+            .then( res => expect(res.statusCode).toBe(400) )
+            .catch( error => { throw error })
     })
 
-    it('Update User', async () => {
+    it('Update User', () => {
         var currentUser = state.user
         currentUser.journey = '09:00'
 
-        const resUpdate = await UpdateUserRoute(currentUser)
+        return request(app)
+            .put('/user/update')
+            .send(currentUser)
+            .then( res => {
+                expect(res.statusCode).toBe(200)
+                expect(res.body.journey).toBe(currentUser.journey)
+            })
+    })
 
-        if (resUpdate.statusCode != 200) {
-            console.error('Update User ===> ', resUpdate.body)
-        }
+    it("Login user", () => {
+        const { email, password } = state.user
 
-        expect(resUpdate.statusCode).toBe(200)
-        expect(resUpdate.body.journey).toBe(currentUser.journey)
+        return request(app)
+            .get("/user/login")
+            .send({ email, password })
+            .then(res => {
+                expect(res.statusCode).toBe(200)
+                expect(res.body.email).toBe(email)
+                expect(res.body.password).toBe(password)
+            })
+            .catch( error => { throw error})
+    })
+
+    it("Login with wrong Password", () => {
+        const email = state.user.email
+        const password = "*&%@#&"
+
+        return request(app)
+            .get("/user/login")
+            .send({ email, password })
+            .then(res => {
+                expect(res.statusCode).toBe(401)
+            })
+            .catch( error => { throw error})
+    })
+
+    it("Login with wrong E-mail", () => {
+        const email = state.user.email + "@"
+        const password = state.user.mail
+
+        return request(app)
+            .get("/user/login")
+            .send({ email, password })
+            .then(res => {
+                expect(res.statusCode).toBe(401)
+            })
+            .catch( error => { throw error})
     })
 
 })

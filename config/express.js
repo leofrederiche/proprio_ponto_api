@@ -9,10 +9,6 @@ const controllerUser = require('../api/controllers/user')
 const controllerEntry = require('../api/controllers/entry')
 const mongoose = require('../api/database/config')
 
-// jest.useFakeTimers('legacy')
-jest.useRealTimers()
-
-
 const app = express()
 
 // getting config variable

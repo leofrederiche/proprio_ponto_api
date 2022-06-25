@@ -18,6 +18,25 @@ router.post('/register', async (req, res) => {
     }
 })
 
+router.get('/login', async (req, res) => {
+    const { email, password } = req.body
+    const user = await User.findOne({ email, password }).exec()
+
+    if (!user) {
+        let returnMessage = {
+            message: "Usuario ou senha incorretos",
+            request_body: req.body,
+            finded: user
+        }
+
+        return res.status(401).send( returnMessage )
+    }
+
+    Object.assign(user, req.body)
+
+    return res.status(200).send(user)
+})
+
 router.put('/update', async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.body._id }).exec()
