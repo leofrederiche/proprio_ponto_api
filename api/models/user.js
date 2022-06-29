@@ -20,6 +20,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, "JORNADA - Informe o tempo da sua jornada de trabalho Diaria"]
     },
+    tolerance: {
+        type: String,
+        default: "00:00"
+    },
     balance: {
         type: String,
         required: [true, "BALANÇO - Precisamos de um saldo inicial do Banco de Horas"],

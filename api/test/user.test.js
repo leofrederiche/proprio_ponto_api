@@ -117,4 +117,23 @@ describe('User Tests', () => {
             .catch( error => { throw error})
     })
 
+    it("Registering Tolerance", () => {
+        const user = {
+            name: faker.name.firstName(),
+            email: faker.internet.email() + Date.now(),
+            password: '123456',
+            journey: "08:00",
+            tolerance: "00:15"
+        }
+
+        return request(app)
+            .post("/user/register")
+            .send(user)
+            .then( res => {
+                expect(res.statusCode).toBe(201)
+                expect(res.body.tolerance).toBe(user.tolerance)
+            })
+            .catch( error => { throw error })
+    })
+
 })
