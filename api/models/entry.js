@@ -10,18 +10,16 @@ const EntrySchema = new mongoose.Schema({
         type: Date,
         required: [true, "DATA - Informe um dia"]
     },
-    in1: {
+    description: {
+        type: String
+    },
+    entries: [{
         type: String,
-        required: [true, "IN1 - Precisamos da Hora da Primeira Entrada"]
-    },
-    out1: {
-        type: String
-    },
-    in2: {
-        type: String
-    },
-    out2: {
-        type: String
+        required: [true, "MARCAÇÃO - Informe a primeira entrada"]
+    }],
+    visible: {
+        type: Boolean,
+        default: true,
     },
     work: {
         type: String

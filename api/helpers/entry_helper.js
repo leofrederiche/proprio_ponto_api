@@ -77,13 +77,30 @@ const IntToTime = (int) => {
     return (negative ? "-" : "") + hours + ":" + minutes
 }
 
-const CalcWorkedTime = (input1, output1, input2, output2) => {
-    var time1 = output1 > input1 ? TimeToInt(output1) - TimeToInt(input1) : 0
-    var time2 = output2 > input2 ? TimeToInt(output2) - TimeToInt(input2) : 0
-    var workTime = time1 + time2
+const CalcWorkedTime = (entries) => {
+    var workTime = 0
+
+    if (entries.length % 2 != 0) {
+        return IntToTime(workTime)
+    }
+
+    entries.map((value, index) => {
+        // Calc only Input X Output
+        if (index % 2 === 0) {
+            workTime += TimeToInt(entries[index + 1]) - TimeToInt(value)
+        }
+    })
 
     return IntToTime(workTime)
 }
+
+// const CalcWorkedTime = (input1, output1, input2, output2) => {
+//     var time1 = output1 > input1 ? TimeToInt(output1) - TimeToInt(input1) : 0
+//     var time2 = output2 > input2 ? TimeToInt(output2) - TimeToInt(input2) : 0
+//     var workTime = time1 + time2
+
+//     return IntToTime(workTime)
+// }
 
 const CalcDayBalance = (workTime, journey) => {
     var result = TimeToInt(workTime) - TimeToInt(journey)

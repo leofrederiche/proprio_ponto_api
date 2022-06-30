@@ -20,14 +20,11 @@ router.post("/register", async (req, res) => {
         return res.status(400).send(returnMessage)
     }
 
-    let { in1, out1, in2, out2 } = entry
     let workedTime = "00:00"
     let dayBalance = "00:00"
 
-    if (![in1, in2, out1, out2].includes(undefined)) {
-        workedTime = CalcWorkedTime(in1, out1, in2, out2)
-        dayBalance = CalcDayBalance(workedTime, user.journey)
-    }
+    workedTime = CalcWorkedTime(entry.entries)
+    dayBalance = CalcDayBalance(workedTime, user.journey)
 
     entry.work = workedTime
     entry.balance = dayBalance
@@ -64,6 +61,7 @@ router.post("/register", async (req, res) => {
 router.put("/update", async (req, res) => {
     try {
         const entry = await Entry.findOne({ _id: req.body._id }).exec()
+        const user = await User.findOne({ _id: req.body.user}).exec()
 
         if (!entry) {
             let returnMessage = {
@@ -76,6 +74,12 @@ router.put("/update", async (req, res) => {
         }
 
         Object.assign(entry, req.body)
+        
+        const worked = CalcWorkedTime(entry.entries)
+        const dayBalance = CalcDayBalance(worked, user.journey)
+
+        entry.work = worked
+        entry.balance= dayBalance
 
         const entryUpdated = await entry.save()
             .then( doc => doc)
