@@ -2,8 +2,7 @@ const router = require("express").Router()
 const Entry = require("../models/entry")
 const User = require("../models/user")
 
-const { GetEntries, ValidateEntry, CalcWorkedTime, CalcDayBalance, SumBalance } = require("../helpers/entry_helper")
-const { GetUser } = require("../helpers/user_helper")
+const { ValidateEntry, CalcWorkedTime, CalcDayBalance, SumBalance } = require("../helpers/entry_helper")
 
 router.post("/register", async (req, res) => {
     const entry = new Entry(req.body)
@@ -96,7 +95,7 @@ router.put("/update", async (req, res) => {
 
 router.get("/", async (req, res) => {
     try {
-        const { user_id, date_start, date_end } = req.body
+        const { user_id } = req.body
 
         const entries = await Entry.find({ user: user_id }).sort("day").exec()
 

@@ -28,10 +28,6 @@ const UserTest = () => {
             await PreviousData()
         })
 
-        // afterAll( async () => {
-        //     await DeleteUser(state.user._id)
-        // })
-
         it('Create User', () => {
             const newUser = {
                 name: faker.name.firstName(),

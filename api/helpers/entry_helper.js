@@ -1,6 +1,5 @@
 const Entry = require('../models/entry')
 
-
 const ValidateEntry = (errs) => {
     let errors = []
 
@@ -94,22 +93,10 @@ const CalcWorkedTime = (entries) => {
     return IntToTime(workTime)
 }
 
-// const CalcWorkedTime = (input1, output1, input2, output2) => {
-//     var time1 = output1 > input1 ? TimeToInt(output1) - TimeToInt(input1) : 0
-//     var time2 = output2 > input2 ? TimeToInt(output2) - TimeToInt(input2) : 0
-//     var workTime = time1 + time2
-
-//     return IntToTime(workTime)
-// }
-
 const CalcDayBalance = (workTime, journey) => {
     var result = TimeToInt(workTime) - TimeToInt(journey)
 
     return IntToTime(result)
-}
-
-const CalcTotalBalance = async (user_id) => {
-    return "a"
 }
 
 const SumBalance = (entries) => {
@@ -131,7 +118,6 @@ module.exports = {
     IntToTime,
     CalcWorkedTime,
     CalcDayBalance,
-    CalcTotalBalance,
     SumBalance,
     DeleteEntry,
     DeleteEntries

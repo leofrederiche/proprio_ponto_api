@@ -38,7 +38,6 @@ describe("Entry Helper", () => {
     it("CalcWorkedTime Complete", () => {
         const times = ["08:00", "12:00", "13:00", "17:10"]
 
-        // const workedTime = EntryHelper.CalcWorkedTime(times[0], times[1], times[2], times[3])
         const workedTime = EntryHelper.CalcWorkedTime(times)
 
         expect(workedTime).toBe("08:10")
