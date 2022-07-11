@@ -66,4 +66,29 @@ router.put('/update', async (req, res) => {
     }
 })
 
+router.get("/exist", async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.body.email }).exec()
+
+        if (!user) {
+            let returnMessage = {
+                message: 'E-mail não registrado',
+                request_body: req.body,
+                finded: user
+            }
+
+            return res.status(206).send( returnMessage )
+        }
+
+        return res.status(200).send(user)
+    }
+    catch (error) {
+        return res.status(400).send({
+            message: 'Erro desconhecido aconteceu',
+            request_body: req.body,
+            error
+        })
+    }
+})
+
 module.exports = router

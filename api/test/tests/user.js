@@ -130,6 +130,30 @@ const UserTest = () => {
                 .catch( error => { throw error })
         })
 
+        it("Finding not exist user", () => {
+            const paramsToFind = { email: "leocamp@gmail.com.jp" }
+
+            return request(app)
+                .get("/user/exist")
+                .send(paramsToFind)
+                .then( res => {
+                    expect(res.statusCode).toBe(206)
+                })
+                .catch( error => { throw error })
+        })
+
+        it("Finding exist user", () => {
+            const paramsToFind = { email: state.user.email }
+
+            return request(app)
+                .get("/user/exist")
+                .send(paramsToFind)
+                .then( res => {
+                    expect(res.statusCode).toBe(200)
+                })
+                .catch( error => { throw error })
+        })
+
     })
 }
 
