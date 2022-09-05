@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
     }
 })
 
-router.get('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     const { email, password } = req.body
     const user = await User.findOne({ email, password }).exec()
 
@@ -66,7 +66,7 @@ router.put('/update', async (req, res) => {
     }
 })
 
-router.get("/exist", async (req, res) => {
+router.post("/exist", async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email }).exec()
 

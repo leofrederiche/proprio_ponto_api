@@ -8,6 +8,7 @@ const controllerMain = require('../api/controllers/main')
 const controllerUser = require('../api/controllers/user')
 const controllerEntry = require('../api/controllers/entry')
 const mongoose = require('../api/database/config')
+const cors = require("cors")
 
 const app = express()
 
@@ -15,6 +16,7 @@ const app = express()
 app.set('port', process.env.PORT || config.get('server.port'))
 
 // middlewares
+app.use(cors())
 app.use(bodyParse.json())
 app.use(bodyParse.urlencoded({ extended: false }))
 

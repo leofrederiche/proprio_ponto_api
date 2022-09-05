@@ -171,12 +171,76 @@ const EntryTest = () => {
             }
 
             return request(app)
-                .get("/entry")
+                .post("/entry")
                 .send(filter)
                 .then( res => {
                     expect(res.statusCode).toBe(200)
                     expect(res.body.totalBalance).toBe('-03:05')
                     expect(res.body.entries.length).toBe(5)
+                })
+                .catch( error => { throw error })
+        })
+
+        it('Insert fast Entry', () => {
+            const currentDate = new Date()
+            const insertedTime = "03:47"
+
+            const data = {
+                user_id: state.user._id,
+                day: currentDate,
+                time: insertedTime
+            }
+
+            return request(app)
+                .post("/entry/fast-entry")
+                .send(data)
+                .then( res => {
+                    expect(res.statusCode).toBe(200)
+                    expect(res.body.entries.length).toBe(1)
+                    expect(res.body.entries[0]).toBe(insertedTime)
+                })
+                .catch( error => { throw error })
+        })
+
+        it('Update fast Entry', () => {
+            const currentDate = new Date()
+            const insertedTime = "04:47"
+
+            const data = {
+                user_id: state.user._id,
+                day: currentDate,
+                time: insertedTime
+            }
+
+            return request(app)
+                .post("/entry/fast-entry")
+                .send(data)
+                .then( res => {
+                    expect(res.statusCode).toBe(200)
+                    expect(res.body.entries.length).toBe(2)
+                    expect(res.body.entries[1]).toBe(insertedTime)
+                })
+                .catch( error => { throw error })
+        })
+
+        it("Delete inexistent entry", function() {
+            const entry_id = state.incompleteEntry + `a`
+
+            return request(app)
+                .delete(`/entry/${entry_id}`)
+                .then( res => {
+                    expect(res.statusCode).toBe(400)
+                })
+                .catch( error => { throw error })
+        })
+
+        it("Delete valid entry", function() {
+            const entry_id = state.incompleteEntry
+
+            return request(app)
+                .delete(`/entry/${entry_id}`)
+                .then( res => {
+                    expect(res.statusCode).toBe(204)
                 })
                 .catch( error => { throw error })
         })

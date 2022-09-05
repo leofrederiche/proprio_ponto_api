@@ -75,7 +75,7 @@ const UserTest = () => {
             const { email, password } = state.user
 
             return request(app)
-                .get("/user/login")
+                .post("/user/login")
                 .send({ email, password })
                 .then(res => {
                     expect(res.statusCode).toBe(200)
@@ -90,7 +90,7 @@ const UserTest = () => {
             const password = "*&%@#&"
 
             return request(app)
-                .get("/user/login")
+                .post("/user/login")
                 .send({ email, password })
                 .then(res => {
                     expect(res.statusCode).toBe(401)
@@ -103,7 +103,7 @@ const UserTest = () => {
             const password = state.user.mail
 
             return request(app)
-                .get("/user/login")
+                .post("/user/login")
                 .send({ email, password })
                 .then(res => {
                     expect(res.statusCode).toBe(401)
@@ -134,7 +134,7 @@ const UserTest = () => {
             const paramsToFind = { email: "leocamp@gmail.com.jp" }
 
             return request(app)
-                .get("/user/exist")
+                .post("/user/exist")
                 .send(paramsToFind)
                 .then( res => {
                     expect(res.statusCode).toBe(206)
@@ -146,7 +146,7 @@ const UserTest = () => {
             const paramsToFind = { email: state.user.email }
 
             return request(app)
-                .get("/user/exist")
+                .post("/user/exist")
                 .send(paramsToFind)
                 .then( res => {
                     expect(res.statusCode).toBe(200)
