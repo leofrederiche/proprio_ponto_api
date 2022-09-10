@@ -97,6 +97,17 @@ router.post("/", async (req, res) => {
     try {
         const { user_id } = req.body
 
+        const user = await User.findOne({ _id: user_id}).exec()
+        if (!user) {
+            let returnMessage = {
+                message: "Não foi possível localizar o usuario",
+                request_body: req.body,
+                finded: user
+            }
+
+            return res.status(400).send(returnMessage) 
+        }
+
         const entries = await Entry.find({ user: user_id }).sort("day").exec()
 
         if (!entries) {
@@ -109,7 +120,8 @@ router.post("/", async (req, res) => {
             return res.status(400).send(returnMessage)
         }
 
-        const totalBalance = SumBalance(entries)
+        // const totalBalance = SumBalance(entries)
+        const totalBalance = SumBalance(entries, user.balance)
 
         const result = {
             totalBalance,
@@ -143,7 +155,6 @@ router.post("/fast-entry", async (req, res) => {
     }
 
     let entry = await Entry.findOne({ user: user_id, day: date }).exec()
-
     if (!entry) {
         entry = new Entry
         entry.user = user_id

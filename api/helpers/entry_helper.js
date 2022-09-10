@@ -99,12 +99,14 @@ const CalcDayBalance = (workTime, journey) => {
     return IntToTime(result)
 }
 
-const SumBalance = (entries) => {
+const SumBalance = (entries, initialBalance = "00:00") => {
     let totalBalanceInt = 0
 
     entries.map( entry => {
         totalBalanceInt += TimeToInt(entry.balance)
     })
+
+    totalBalanceInt += TimeToInt(initialBalance)
 
     const result = IntToTime(totalBalanceInt)
     return result
